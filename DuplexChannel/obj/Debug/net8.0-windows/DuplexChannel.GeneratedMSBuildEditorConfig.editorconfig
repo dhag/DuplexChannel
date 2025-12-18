@@ -14,6 +14,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = DuplexChannel
-build_property.ProjectDir = C:\Users\dhag\Downloads\新しいフォルダー (18)\DuplexChannel\DuplexChannel\
+build_property.ProjectDir = D:\UNITY保存の品\TEO3.0開発中\ネットワーク通信統合\DuplexChannel\DuplexChannel\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 

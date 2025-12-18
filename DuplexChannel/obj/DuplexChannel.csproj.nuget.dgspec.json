@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\dhag\\Downloads\\新しいフォルダー (18)\\DuplexChannel\\DuplexChannel\\DuplexChannel.csproj": {}
+    "D:\\UNITY保存の品\\TEO3.0開発中\\ネットワーク通信統合\\DuplexChannel\\DuplexChannel\\DuplexChannel.csproj": {}
   },
   "projects": {
-    "C:\\Users\\dhag\\Downloads\\新しいフォルダー (18)\\DuplexChannel\\DuplexChannel\\DuplexChannel.csproj": {
+    "D:\\UNITY保存の品\\TEO3.0開発中\\ネットワーク通信統合\\DuplexChannel\\DuplexChannel\\DuplexChannel.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\dhag\\Downloads\\新しいフォルダー (18)\\DuplexChannel\\DuplexChannel\\DuplexChannel.csproj",
+        "projectUniqueName": "D:\\UNITY保存の品\\TEO3.0開発中\\ネットワーク通信統合\\DuplexChannel\\DuplexChannel\\DuplexChannel.csproj",
         "projectName": "DuplexChannel",
-        "projectPath": "C:\\Users\\dhag\\Downloads\\新しいフォルダー (18)\\DuplexChannel\\DuplexChannel\\DuplexChannel.csproj",
+        "projectPath": "D:\\UNITY保存の品\\TEO3.0開発中\\ネットワーク通信統合\\DuplexChannel\\DuplexChannel\\DuplexChannel.csproj",
         "packagesPath": "C:\\Users\\dhag\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\dhag\\Downloads\\新しいフォルダー (18)\\DuplexChannel\\DuplexChannel\\obj\\",
+        "outputPath": "D:\\UNITY保存の品\\TEO3.0開発中\\ネットワーク通信統合\\DuplexChannel\\DuplexChannel\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

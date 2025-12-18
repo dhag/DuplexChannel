@@ -1,17 +1,17 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\dhag\\Downloads\\\u65B0\u3057\u3044\u30D5\u30A9\u30EB\u30C0\u30FC (18)\\DuplexChannel\\",
+  "WorkspaceRootPath": "D:\\UNITY\u4FDD\u5B58\u306E\u54C1\\TEO3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\DuplexChannel\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|c:\\users\\dhag\\downloads\\\u65B0\u3057\u3044\u30D5\u30A9\u30EB\u30C0\u30FC (18)\\duplexchannel\\duplexchannel\\core\\duplexpacket.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|d:\\unity\u4FDD\u5B58\u306E\u54C1\\teo3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\duplexchannel\\duplexchannel\\core\\duplexpacket.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|solutionrelative:duplexchannel\\core\\duplexpacket.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|c:\\users\\dhag\\downloads\\\u65B0\u3057\u3044\u30D5\u30A9\u30EB\u30C0\u30FC (18)\\duplexchannel\\duplexchannel\\samples\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|D:\\UNITY\u4FDD\u5B58\u306E\u54C1\\TEO3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\DuplexChannel\\duplexchannel\\samples\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|solutionrelative:duplexchannel\\samples\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|c:\\users\\dhag\\downloads\\\u65B0\u3057\u3044\u30D5\u30A9\u30EB\u30C0\u30FC (18)\\duplexchannel\\duplexchannel\\samples\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|D:\\UNITY\u4FDD\u5B58\u306E\u54C1\\TEO3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\DuplexChannel\\duplexchannel\\samples\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|solutionrelative:duplexchannel\\samples\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -28,37 +28,35 @@
               "$type": "Document",
               "DocumentIndex": 1,
               "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\dhag\\Downloads\\\u65B0\u3057\u3044\u30D5\u30A9\u30EB\u30C0\u30FC (18)\\DuplexChannel\\DuplexChannel\\Samples\\Program.cs",
+              "DocumentMoniker": "D:\\UNITY\u4FDD\u5B58\u306E\u54C1\\TEO3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\DuplexChannel\\DuplexChannel\\Samples\\Program.cs",
               "RelativeDocumentMoniker": "DuplexChannel\\Samples\\Program.cs",
-              "ToolTip": "C:\\Users\\dhag\\Downloads\\\u65B0\u3057\u3044\u30D5\u30A9\u30EB\u30C0\u30FC (18)\\DuplexChannel\\DuplexChannel\\Samples\\Program.cs",
+              "ToolTip": "D:\\UNITY\u4FDD\u5B58\u306E\u54C1\\TEO3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\DuplexChannel\\DuplexChannel\\Samples\\Program.cs",
               "RelativeToolTip": "DuplexChannel\\Samples\\Program.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAADwvwAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-18T09:07:08.235Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-18T09:07:08.235Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
               "Title": "Form1.cs",
-              "DocumentMoniker": "C:\\Users\\dhag\\Downloads\\\u65B0\u3057\u3044\u30D5\u30A9\u30EB\u30C0\u30FC (18)\\DuplexChannel\\DuplexChannel\\Samples\\Form1.cs",
+              "DocumentMoniker": "D:\\UNITY\u4FDD\u5B58\u306E\u54C1\\TEO3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\DuplexChannel\\DuplexChannel\\Samples\\Form1.cs",
               "RelativeDocumentMoniker": "DuplexChannel\\Samples\\Form1.cs",
-              "ToolTip": "C:\\Users\\dhag\\Downloads\\\u65B0\u3057\u3044\u30D5\u30A9\u30EB\u30C0\u30FC (18)\\DuplexChannel\\DuplexChannel\\Samples\\Form1.cs",
+              "ToolTip": "D:\\UNITY\u4FDD\u5B58\u306E\u54C1\\TEO3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\DuplexChannel\\DuplexChannel\\Samples\\Form1.cs",
               "RelativeToolTip": "DuplexChannel\\Samples\\Form1.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAXAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-18T09:06:55.517Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-18T09:06:55.517Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "DuplexPacket.cs",
-              "DocumentMoniker": "C:\\Users\\dhag\\Downloads\\\u65B0\u3057\u3044\u30D5\u30A9\u30EB\u30C0\u30FC (18)\\DuplexChannel\\DuplexChannel\\Core\\DuplexPacket.cs",
+              "DocumentMoniker": "D:\\UNITY\u4FDD\u5B58\u306E\u54C1\\TEO3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\DuplexChannel\\DuplexChannel\\Core\\DuplexPacket.cs",
               "RelativeDocumentMoniker": "DuplexChannel\\Core\\DuplexPacket.cs",
-              "ToolTip": "C:\\Users\\dhag\\Downloads\\\u65B0\u3057\u3044\u30D5\u30A9\u30EB\u30C0\u30FC (18)\\DuplexChannel\\DuplexChannel\\Core\\DuplexPacket.cs",
+              "ToolTip": "D:\\UNITY\u4FDD\u5B58\u306E\u54C1\\TEO3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\DuplexChannel\\DuplexChannel\\Core\\DuplexPacket.cs",
               "RelativeToolTip": "DuplexChannel\\Core\\DuplexPacket.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAQAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-18T09:06:28.761Z",
               "EditorCaption": ""
