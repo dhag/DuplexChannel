@@ -14,10 +14,13 @@ namespace HagLib.NET.Duplex
     /// - コネクションレス（接続状態なし）
     /// - パケットロス・順序逆転の可能性あり
     /// - 1パケット最大約1400バイト推奨（MTU制限）
-    /// - SendAndReceiveAsync は応答が届かない可能性あり（タイムアウト必須）
+    /// - SendAndReceiveAsync は応答が届かない可能性あり（タイムアウトあり）
     /// </summary>
-    public class UdpDuplexChannel : IDisposable
+    public class UdpDuplexChannel : IDuplexChannel
     {
+        public const int MaxPayloadSize = 1400;
+        public const int DefaultTimeoutMs = 3000;
+
         private UdpClient _udpClient;
         private readonly CancellationTokenSource _cts;
         private readonly ConcurrentDictionary<int, TaskCompletionSource<DuplexMessage>> _pendingRequests;
@@ -27,14 +30,28 @@ namespace HagLib.NET.Duplex
         private Task _receiveTask;
         private IPEndPoint _remoteEndPoint;
         private IPEndPoint _localEndPoint;
+        private int _timeoutMs = DefaultTimeoutMs;
 
-        /// <summary>受信時の送信元アドレス</summary>
+        /// <summary>受信時の送信元アドレス（ReplyAsync用）</summary>
         public IPEndPoint LastReceivedFrom { get; private set; }
+
+        /// <summary>デフォルトタイムアウト（ミリ秒）</summary>
+        public int TimeoutMs
+        {
+            get => _timeoutMs;
+            set => _timeoutMs = value > 0 ? value : DefaultTimeoutMs;
+        }
 
         public string Id { get; }
 
-        /// <summary>メッセージ受信イベント</summary>
-        public event Action<UdpDuplexChannel, DuplexMessage, IPEndPoint> OnReceived;
+        /// <summary>接続先が設定されているか（UDPは常にtrue扱い）</summary>
+        public bool IsConnected => _udpClient != null && _remoteEndPoint != null;
+
+        public event Action<IDuplexChannel, DuplexMessage> OnReceived;
+        public event Action<IDuplexChannel> OnDisconnected;
+
+        /// <summary>メッセージ受信イベント（送信元アドレス付き）</summary>
+        public event Action<UdpDuplexChannel, DuplexMessage, IPEndPoint> OnReceivedWithEndPoint;
 
         /// <summary>
         /// コンストラクタ
@@ -106,6 +123,17 @@ namespace HagLib.NET.Duplex
             }
         }
 
+        private void ValidatePayloadSize(DuplexMessage message)
+        {
+            var packet = DuplexPacket.Serialize(message);
+            if (packet.Length > MaxPayloadSize)
+            {
+                throw new ArgumentException($"Message size ({packet.Length} bytes) exceeds UDP MTU limit ({MaxPayloadSize} bytes). Use TCP or WebSocket for large data.");
+            }
+        }
+
+        #region IDuplexChannel 実装
+
         /// <summary>
         /// プッシュ送信（デフォルト送信先へ）
         /// </summary>
@@ -113,17 +141,9 @@ namespace HagLib.NET.Duplex
         {
             if (_remoteEndPoint == null)
                 throw new InvalidOperationException("Remote endpoint not set. Call Connect() first.");
-            return SendAsync(message, _remoteEndPoint, ct);
-        }
-
-        /// <summary>
-        /// プッシュ送信（送信先指定）
-        /// </summary>
-        public async Task SendAsync(DuplexMessage message, IPEndPoint remoteEndPoint, CancellationToken ct = default)
-        {
-            message.Type = MessageType.Push;
-            message.Id = Interlocked.Increment(ref _nextMessageId);
-            await SendInternalAsync(message, remoteEndPoint, ct).ConfigureAwait(false);
+            
+            ValidatePayloadSize(message);
+            return SendAsyncInternal(message, _remoteEndPoint, ct);
         }
 
         public Task SendAsync(string text, CancellationToken ct = default)
@@ -136,27 +156,88 @@ namespace HagLib.NET.Duplex
             return SendAsync(new DuplexMessage(data), ct);
         }
 
+        /// <summary>
+        /// リクエスト送信して応答を待つ（デフォルトタイムアウト使用）
+        /// </summary>
+        public Task<DuplexMessage> SendAndReceiveAsync(DuplexMessage message, CancellationToken ct = default)
+        {
+            if (_remoteEndPoint == null)
+                throw new InvalidOperationException("Remote endpoint not set. Call Connect() first.");
+            
+            ValidatePayloadSize(message);
+            return SendAndReceiveAsync(message, _remoteEndPoint, _timeoutMs, ct);
+        }
+
+        public Task<DuplexMessage> SendAndReceiveAsync(string text, CancellationToken ct = default)
+        {
+            return SendAndReceiveAsync(new DuplexMessage(text), ct);
+        }
+
+        /// <summary>
+        /// リクエストに応答（LastReceivedFromに返信）
+        /// </summary>
+        public Task ReplyAsync(DuplexMessage request, DuplexMessage response, CancellationToken ct = default)
+        {
+            if (LastReceivedFrom == null)
+                throw new InvalidOperationException("No message received yet. LastReceivedFrom is null.");
+            
+            ValidatePayloadSize(response);
+            return ReplyAsync(request, response, LastReceivedFrom, ct);
+        }
+
+        public Task ReplyAsync(DuplexMessage request, string text, CancellationToken ct = default)
+        {
+            return ReplyAsync(request, new DuplexMessage(text), ct);
+        }
+
+        public Task CloseAsync()
+        {
+            Close();
+            return Task.CompletedTask;
+        }
+
+        #endregion
+
+        #region 送信先指定版メソッド（UDP固有）
+
+        /// <summary>
+        /// プッシュ送信（送信先指定）
+        /// </summary>
+        public async Task SendAsync(DuplexMessage message, IPEndPoint remoteEndPoint, CancellationToken ct = default)
+        {
+            ValidatePayloadSize(message);
+            await SendAsyncInternal(message, remoteEndPoint, ct).ConfigureAwait(false);
+        }
+
+        private async Task SendAsyncInternal(DuplexMessage message, IPEndPoint remoteEndPoint, CancellationToken ct)
+        {
+            message.Type = MessageType.Push;
+            message.Id = Interlocked.Increment(ref _nextMessageId);
+            await SendInternalAsync(message, remoteEndPoint, ct).ConfigureAwait(false);
+        }
+
         public Task SendAsync(string text, IPEndPoint remoteEndPoint, CancellationToken ct = default)
         {
             return SendAsync(new DuplexMessage(text), remoteEndPoint, ct);
         }
 
         /// <summary>
-        /// リクエスト送信して応答を待つ
-        /// 注意: UDPは信頼性がないため、タイムアウト必須
+        /// リクエスト送信して応答を待つ（タイムアウト指定）
         /// </summary>
-        public async Task<DuplexMessage> SendAndReceiveAsync(DuplexMessage message, int timeoutMs = 3000, CancellationToken ct = default)
+        public Task<DuplexMessage> SendAndReceiveAsync(DuplexMessage message, int timeoutMs, CancellationToken ct = default)
         {
             if (_remoteEndPoint == null)
                 throw new InvalidOperationException("Remote endpoint not set. Call Connect() first.");
-            return await SendAndReceiveAsync(message, _remoteEndPoint, timeoutMs, ct).ConfigureAwait(false);
+            return SendAndReceiveAsync(message, _remoteEndPoint, timeoutMs, ct);
         }
 
         /// <summary>
         /// リクエスト送信して応答を待つ（送信先指定）
         /// </summary>
-        public async Task<DuplexMessage> SendAndReceiveAsync(DuplexMessage message, IPEndPoint remoteEndPoint, int timeoutMs = 3000, CancellationToken ct = default)
+        public async Task<DuplexMessage> SendAndReceiveAsync(DuplexMessage message, IPEndPoint remoteEndPoint, int timeoutMs, CancellationToken ct = default)
         {
+            ValidatePayloadSize(message);
+            
             message.Type = MessageType.Request;
             message.Id = Interlocked.Increment(ref _nextMessageId);
 
@@ -178,16 +259,17 @@ namespace HagLib.NET.Duplex
             }
         }
 
-        public Task<DuplexMessage> SendAndReceiveAsync(string text, int timeoutMs = 3000, CancellationToken ct = default)
+        public Task<DuplexMessage> SendAndReceiveAsync(string text, int timeoutMs, CancellationToken ct = default)
         {
             return SendAndReceiveAsync(new DuplexMessage(text), timeoutMs, ct);
         }
 
         /// <summary>
-        /// リクエストに応答
+        /// リクエストに応答（送信先指定）
         /// </summary>
         public Task ReplyAsync(DuplexMessage request, DuplexMessage response, IPEndPoint remoteEndPoint, CancellationToken ct = default)
         {
+            ValidatePayloadSize(response);
             response.Type = MessageType.Response;
             response.Id = request.Id;
             return SendInternalAsync(response, remoteEndPoint, ct);
@@ -203,11 +285,11 @@ namespace HagLib.NET.Duplex
         /// </summary>
         public async Task BroadcastAsync(DuplexMessage message, int port, CancellationToken ct = default)
         {
+            ValidatePayloadSize(message);
             message.Type = MessageType.Push;
             message.Id = Interlocked.Increment(ref _nextMessageId);
             var broadcastEndPoint = new IPEndPoint(IPAddress.Broadcast, port);
             
-            // ブロードキャスト許可
             _udpClient.EnableBroadcast = true;
             await SendInternalAsync(message, broadcastEndPoint, ct).ConfigureAwait(false);
         }
@@ -217,10 +299,13 @@ namespace HagLib.NET.Duplex
             return BroadcastAsync(new DuplexMessage(text), port, ct);
         }
 
+        #endregion
+
         public void Close()
         {
             _cts.Cancel();
             _udpClient?.Close();
+            OnDisconnected?.Invoke(this);
         }
 
         public void Dispose()
@@ -241,13 +326,6 @@ namespace HagLib.NET.Duplex
             try
             {
                 var packet = DuplexPacket.Serialize(message);
-                
-                // MTU警告（大きすぎるとフラグメント化される）
-                if (packet.Length > 1400)
-                {
-                    System.Diagnostics.Debug.WriteLine($"Warning: UDP packet size {packet.Length} exceeds recommended MTU");
-                }
-
                 await _udpClient.SendAsync(packet, packet.Length, remoteEndPoint).ConfigureAwait(false);
             }
             finally
@@ -272,14 +350,12 @@ namespace HagLib.NET.Duplex
                     if (data.Length < DuplexPacket.HeaderSize)
                         continue;
 
-                    // ヘッダー解析
                     var header = new byte[DuplexPacket.HeaderSize];
                     Buffer.BlockCopy(data, 0, header, 0, DuplexPacket.HeaderSize);
 
                     if (!DuplexPacket.TryParseHeader(header, out var type, out var messageId, out var payloadLength, out var tagLength))
                         continue;
 
-                    // ボディ解析
                     var bodyLength = tagLength + payloadLength;
                     byte[] body = null;
                     if (bodyLength > 0 && data.Length >= DuplexPacket.HeaderSize + bodyLength)
@@ -316,7 +392,10 @@ namespace HagLib.NET.Duplex
             }
             else
             {
-                OnReceived?.Invoke(this, message, from);
+                // IDuplexChannel用（送信元なし）
+                OnReceived?.Invoke(this, message);
+                // UDP固有（送信元あり）
+                OnReceivedWithEndPoint?.Invoke(this, message, from);
             }
         }
     }

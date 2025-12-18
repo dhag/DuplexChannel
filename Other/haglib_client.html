@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HagLib Duplex Client</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .card h2 {
+            margin-top: 0;
+            color: #555;
+            font-size: 1.1em;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        .status.connected {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .status.connecting {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        input[type="text"], input[type="number"] {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        button.primary {
+            background: #007bff;
+            color: white;
+        }
+        button.primary:hover {
+            background: #0056b3;
+        }
+        button.secondary {
+            background: #6c757d;
+            color: white;
+        }
+        button.secondary:hover {
+            background: #545b62;
+        }
+        button.success {
+            background: #28a745;
+            color: white;
+        }
+        button.success:hover {
+            background: #1e7e34;
+        }
+        button.danger {
+            background: #dc3545;
+            color: white;
+        }
+        button.danger:hover {
+            background: #c82333;
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13px;
+            resize: vertical;
+        }
+        #log {
+            height: 300px;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .log-time {
+            color: #6a9955;
+        }
+        .log-send {
+            color: #569cd6;
+        }
+        .log-recv {
+            color: #ce9178;
+        }
+        .log-error {
+            color: #f44747;
+        }
+        .log-info {
+            color: #dcdcaa;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 15px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 14px;
+            color: #666;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+        }
+        .tab.active {
+            color: #007bff;
+            border-bottom-color: #007bff;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .item-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        .item-row select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .item-row input {
+            flex: 1;
+        }
+        .item-row button {
+            padding: 8px 12px;
+        }
+        #itemsList {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .note {
+            background: #e7f3ff;
+            border-left: 4px solid #007bff;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔌 HagLib Duplex Client</h1>
+
+    <div class="note">
+        <strong>接続先:</strong> C#の<code>WebSocketDuplexServer</code>
+    </div>
+
+    <!-- 接続設定 -->
+    <div class="card">
+        <h2>接続設定</h2>
+        <div class="row">
+            <input type="text" id="wsUrl" value="ws://localhost:8080/" placeholder="WebSocket URL">
+            <button id="btnConnect" class="primary" onclick="connect()">接続</button>
+            <button id="btnDisconnect" class="danger" onclick="disconnect()" disabled>切断</button>
+            <span id="status" class="status disconnected">未接続</span>
+        </div>
+    </div>
+
+    <!-- メッセージ送信 -->
+    <div class="card">
+        <h2>メッセージ送信</h2>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('simple')">シンプル</button>
+            <button class="tab" onclick="showTab('typed')">TypedPayload</button>
+            <button class="tab" onclick="showTab('json')">JSON</button>
+        </div>
+
+        <!-- シンプル送信 -->
+        <div id="tab-simple" class="tab-content active">
+            <div class="row">
+                <input type="text" id="simpleText" placeholder="送信するテキスト" value="Hello!">
+                <button class="success" onclick="sendSimple('send')">Push送信</button>
+                <button class="primary" onclick="sendSimple('request')">Request送信</button>
+            </div>
+        </div>
+
+        <!-- TypedPayload送信 -->
+        <div id="tab-typed" class="tab-content">
+            <div id="itemsList"></div>
+            <div class="item-row">
+                <select id="newItemType">
+                    <option value="0">Text</option>
+                    <option value="3">JSON</option>
+                    <option value="2">Image (Base64)</option>
+                    <option value="1">Binary (Base64)</option>
+                </select>
+                <input type="text" id="newItemData" placeholder="データ">
+                <button class="secondary" onclick="addItem()">追加</button>
+            </div>
+            <div class="row" style="margin-top: 10px;">
+                <button class="success" onclick="sendTyped('send')">Push送信</button>
+                <button class="primary" onclick="sendTyped('request')">Request送信</button>
+                <button class="secondary" onclick="clearItems()">クリア</button>
+            </div>
+        </div>
+
+        <!-- JSON送信 -->
+        <div id="tab-json" class="tab-content">
+            <textarea id="jsonData" placeholder='{"key": "value"}'></textarea>
+            <div class="row">
+                <button class="success" onclick="sendJson('send')">Push送信</button>
+                <button class="primary" onclick="sendJson('request')">Request送信</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ログ -->
+    <div class="card">
+        <h2>ログ <button class="secondary" onclick="clearLog()" style="float:right;padding:4px 10px;font-size:12px;">クリア</button></h2>
+        <textarea id="log" readonly></textarea>
+    </div>
+
+    <script>
+        // ========================================
+        // HagLib Duplex WebSocket Client
+        // ========================================
+
+        let ws = null;
+        let items = [];
+        let pendingRequests = new Map();
+        let nextRequestId = 0;
+
+        // ContentType定数
+        const ContentType = {
+            TEXT: 0,
+            BINARY: 1,
+            IMAGE: 2,
+            JSON: 3,
+            CUSTOM: 255
+        };
+
+        // ========================================
+        // 接続管理
+        // ========================================
+
+        function connect() {
+            const url = document.getElementById('wsUrl').value;
+            setStatus('connecting', '接続中...');
+            
+            ws = new WebSocket(url);
+
+            ws.onopen = () => {
+                log('info', `WebSocketに接続しました: ${url}`);
+                setStatus('connected', '接続中');
+                document.getElementById('btnConnect').disabled = true;
+                document.getElementById('btnDisconnect').disabled = false;
+            };
+
+            ws.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    handleMessage(data);
+                } catch (e) {
+                    log('error', `メッセージ解析エラー: ${e.message}`);
+                }
+            };
+
+            ws.onerror = (error) => {
+                log('error', 'WebSocketエラー');
+                setStatus('disconnected', '未接続');
+            };
+
+            ws.onclose = () => {
+                log('info', 'WebSocket切断');
+                setStatus('disconnected', '未接続');
+                document.getElementById('btnConnect').disabled = false;
+                document.getElementById('btnDisconnect').disabled = true;
+                
+                // 保留中のリクエストをキャンセル
+                for (const [id, callback] of pendingRequests) {
+                    callback({ error: 'Connection closed' });
+                }
+                pendingRequests.clear();
+            };
+        }
+
+        function disconnect() {
+            if (ws) {
+                ws.close();
+                ws = null;
+            }
+        }
+
+        function handleMessage(data) {
+            const type = data.type || 'push';
+            const id = data.id || 0;
+
+            if (type === 'response') {
+                // レスポンス
+                log('recv', `レスポンス受信 (id=${id}):`);
+                displayItems(data.items);
+
+                const callback = pendingRequests.get(id);
+                if (callback) {
+                    pendingRequests.delete(id);
+                    callback(data);
+                }
+            } else if (type === 'push' || type === 'request') {
+                // Push/Request受信
+                log('recv', `${type === 'push' ? 'Push' : 'Request'}受信 (id=${id}):`);
+                displayItems(data.items);
+            } else if (type === 'connected') {
+                // ブリッジ経由の場合の接続通知
+                log('info', 'TCPサーバーに接続しました');
+            } else if (type === 'sent') {
+                log('send', 'Push送信完了');
+            } else if (type === 'error') {
+                log('error', `エラー: ${data.message}`);
+            }
+        }
+
+        function displayItems(items) {
+            if (!items || items.length === 0) {
+                log('recv', '  (空のペイロード)');
+                return;
+            }
+
+            for (const item of items) {
+                const typeName = ['TEXT', 'BINARY', 'IMAGE', 'JSON'][item.type] || 'CUSTOM';
+                let display = item.data;
+                
+                if (item.encoding === 'base64') {
+                    display = `[Base64 ${item.data.length} chars]`;
+                } else if (typeof display === 'object') {
+                    display = JSON.stringify(display);
+                }
+                
+                log('recv', `  [${typeName}] ${item.mimeType}: ${display}`);
+            }
+        }
+
+        // ========================================
+        // 送信機能
+        // ========================================
+
+        function sendSimple(type) {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                log('error', '接続されていません');
+                return;
+            }
+
+            const text = document.getElementById('simpleText').value;
+            log('send', `${type === 'send' ? 'Push' : 'Request'}送信: "${text}"`);
+
+            const message = {
+                type: type,
+                text: text
+            };
+
+            if (type === 'request') {
+                message.id = ++nextRequestId;
+                pendingRequests.set(message.id, (response) => {
+                    // 応答はhandleMessageで処理される
+                });
+            }
+
+            ws.send(JSON.stringify(message));
+        }
+
+        function sendTyped(type) {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                log('error', '接続されていません');
+                return;
+            }
+
+            if (items.length === 0) {
+                log('error', 'アイテムがありません');
+                return;
+            }
+
+            log('send', `${type === 'send' ? 'Push' : 'Request'}送信: ${items.length}アイテム`);
+
+            const message = {
+                type: type,
+                items: items
+            };
+
+            if (type === 'request') {
+                message.id = ++nextRequestId;
+                pendingRequests.set(message.id, (response) => {});
+            }
+
+            ws.send(JSON.stringify(message));
+        }
+
+        function sendJson(type) {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                log('error', '接続されていません');
+                return;
+            }
+
+            const jsonText = document.getElementById('jsonData').value;
+            
+            try {
+                const parsed = JSON.parse(jsonText);
+                log('send', `${type === 'send' ? 'Push' : 'Request'}送信: JSON`);
+
+                const message = {
+                    type: type,
+                    json: jsonText // 文字列として送信
+                };
+
+                if (type === 'request') {
+                    message.id = ++nextRequestId;
+                    pendingRequests.set(message.id, (response) => {});
+                }
+
+                ws.send(JSON.stringify(message));
+            } catch (e) {
+                log('error', `JSON解析エラー: ${e.message}`);
+            }
+        }
+
+        // ========================================
+        // TypedPayloadアイテム管理
+        // ========================================
+
+        function addItem() {
+            const type = parseInt(document.getElementById('newItemType').value);
+            const data = document.getElementById('newItemData').value;
+
+            if (!data) {
+                log('error', 'データを入力してください');
+                return;
+            }
+
+            const mimeTypes = {
+                0: 'text/plain',
+                1: 'application/octet-stream',
+                2: 'image/png',
+                3: 'application/json'
+            };
+
+            const item = {
+                type: type,
+                mimeType: mimeTypes[type] || 'application/octet-stream',
+                data: data
+            };
+
+            // バイナリ系はBase64エンコーディングを指定
+            if (type === 1 || type === 2) {
+                item.encoding = 'base64';
+            }
+
+            items.push(item);
+            document.getElementById('newItemData').value = '';
+            renderItems();
+        }
+
+        function removeItem(index) {
+            items.splice(index, 1);
+            renderItems();
+        }
+
+        function clearItems() {
+            items = [];
+            renderItems();
+        }
+
+        function renderItems() {
+            const container = document.getElementById('itemsList');
+            const typeNames = ['TEXT', 'BINARY', 'IMAGE', 'JSON'];
+
+            if (items.length === 0) {
+                container.innerHTML = '<div style="color:#888;padding:10px;">アイテムがありません</div>';
+                return;
+            }
+
+            container.innerHTML = items.map((item, i) => `
+                <div class="item-row">
+                    <span style="min-width:60px;color:#666;">[${typeNames[item.type] || 'CUSTOM'}]</span>
+                    <input type="text" value="${escapeHtml(item.data)}" readonly style="background:#f8f9fa;">
+                    <button class="danger" onclick="removeItem(${i})">削除</button>
+                </div>
+            `).join('');
+        }
+
+        // ========================================
+        // UI ヘルパー
+        // ========================================
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            
+            document.querySelector(`.tab[onclick="showTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+        }
+
+        function setStatus(state, text) {
+            const el = document.getElementById('status');
+            el.className = `status ${state}`;
+            el.textContent = text;
+        }
+
+        function log(type, message) {
+            const logEl = document.getElementById('log');
+            const time = new Date().toLocaleTimeString();
+            const prefix = {
+                'send': '[送信]',
+                'recv': '[受信]',
+                'error': '[エラー]',
+                'info': '[情報]'
+            }[type] || '';
+
+            logEl.value += `[${time}] ${prefix} ${message}\n`;
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('log').value = '';
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, '&amp;')
+                      .replace(/</g, '&lt;')
+                      .replace(/>/g, '&gt;')
+                      .replace(/"/g, '&quot;');
+        }
+
+        // 初期化
+        renderItems();
+    </script>
+</body>
+</html>

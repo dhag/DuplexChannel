@@ -1,0 +1,17 @@
+D:\UNITY保存の品\TEO3.0開発中\ネットワーク通信統合\DuplexChannel\DuplexChannel\bin\Debug\net8.0-windows\DuplexChannel.exe
+D:\UNITY保存の品\TEO3.0開発中\ネットワーク通信統合\DuplexChannel\DuplexChannel\bin\Debug\net8.0-windows\DuplexChannel.deps.json
+D:\UNITY保存の品\TEO3.0開発中\ネットワーク通信統合\DuplexChannel\DuplexChannel\bin\Debug\net8.0-windows\DuplexChannel.runtimeconfig.json
+D:\UNITY保存の品\TEO3.0開発中\ネットワーク通信統合\DuplexChannel\DuplexChannel\bin\Debug\net8.0-windows\DuplexChannel.dll
+D:\UNITY保存の品\TEO3.0開発中\ネットワーク通信統合\DuplexChannel\DuplexChannel\bin\Debug\net8.0-windows\DuplexChannel.pdb
+D:\UNITY保存の品\TEO3.0開発中\ネットワーク通信統合\DuplexChannel\DuplexChannel\obj\Debug\net8.0-windows\DuplexChannel.Form1.resources
+D:\UNITY保存の品\TEO3.0開発中\ネットワーク通信統合\DuplexChannel\DuplexChannel\obj\Debug\net8.0-windows\DuplexChannel.csproj.GenerateResource.cache
+D:\UNITY保存の品\TEO3.0開発中\ネットワーク通信統合\DuplexChannel\DuplexChannel\obj\Debug\net8.0-windows\DuplexChannel.GeneratedMSBuildEditorConfig.editorconfig
+D:\UNITY保存の品\TEO3.0開発中\ネットワーク通信統合\DuplexChannel\DuplexChannel\obj\Debug\net8.0-windows\DuplexChannel.AssemblyInfoInputs.cache
+D:\UNITY保存の品\TEO3.0開発中\ネットワーク通信統合\DuplexChannel\DuplexChannel\obj\Debug\net8.0-windows\DuplexChannel.AssemblyInfo.cs
+D:\UNITY保存の品\TEO3.0開発中\ネットワーク通信統合\DuplexChannel\DuplexChannel\obj\Debug\net8.0-windows\DuplexChannel.csproj.CoreCompileInputs.cache
+D:\UNITY保存の品\TEO3.0開発中\ネットワーク通信統合\DuplexChannel\DuplexChannel\obj\Debug\net8.0-windows\DuplexChannel.sourcelink.json
+D:\UNITY保存の品\TEO3.0開発中\ネットワーク通信統合\DuplexChannel\DuplexChannel\obj\Debug\net8.0-windows\DuplexChannel.dll
+D:\UNITY保存の品\TEO3.0開発中\ネットワーク通信統合\DuplexChannel\DuplexChannel\obj\Debug\net8.0-windows\refint\DuplexChannel.dll
+D:\UNITY保存の品\TEO3.0開発中\ネットワーク通信統合\DuplexChannel\DuplexChannel\obj\Debug\net8.0-windows\DuplexChannel.pdb
+D:\UNITY保存の品\TEO3.0開発中\ネットワーク通信統合\DuplexChannel\DuplexChannel\obj\Debug\net8.0-windows\DuplexChannel.genruntimeconfig.cache
+D:\UNITY保存の品\TEO3.0開発中\ネットワーク通信統合\DuplexChannel\DuplexChannel\obj\Debug\net8.0-windows\ref\DuplexChannel.dll

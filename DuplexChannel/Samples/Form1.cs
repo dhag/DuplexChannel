@@ -18,5 +18,15 @@ namespace DuplexChannel
         {
             await HagLib.NET.Duplex.Examples.TypedPayloadExample.MixedPayloadExample();
         }
+
+        async private void button3_Click(object sender, EventArgs e)
+        {
+            await HagLib.NET.Duplex.Examples.WebSocketServerExample.Main(null);
+        }
+
+        async private void button4_Click(object sender, EventArgs e)
+        {
+            await HagLib.NET.Duplex.Examples.WebSocketServerExample.Stop();
+        }
     }
 }

@@ -13,7 +13,7 @@ namespace HagLib.NET.Duplex.Examples
     public static class UdpExample
     {
         /// <summary>
-        /// 基本的な送受信の例
+        /// 基本的な送受信の例（TCP/Pipe/WebSocketと同じ書き方）
         /// </summary>
         public static async Task BasicExample()
         {
@@ -23,14 +23,15 @@ namespace HagLib.NET.Duplex.Examples
             // ========== 受信側（サーバー的） ==========
             using var receiver = new UdpDuplexChannel();
 
-            receiver.OnReceived += async (ch, msg, from) =>
+            // TCP/Pipe/WebSocketと同じイベント形式
+            receiver.OnReceived += async (ch, msg) =>
             {
-                Debug.WriteLine($"[Receiver] From {from}: {msg.PayloadString}");
+                Debug.WriteLine($"[Receiver] {msg.PayloadString}");
 
-                // リクエストなら応答
+                // リクエストなら応答（LastReceivedFromに自動返信）
                 if (msg.Type == MessageType.Request)
                 {
-                    await ch.ReplyAsync(msg, $"Response to: {msg.PayloadString}", from);
+                    await ch.ReplyAsync(msg, $"Response to: {msg.PayloadString}");
                 }
             };
 
@@ -40,23 +41,24 @@ namespace HagLib.NET.Duplex.Examples
             // ========== 送信側（クライアント的） ==========
             using var sender = new UdpDuplexChannel();
 
-            sender.OnReceived += (ch, msg, from) =>
+            sender.OnReceived += (ch, msg) =>
             {
                 Debug.WriteLine($"[Sender] Received: {msg.PayloadString}");
             };
 
             sender.BindAndConnect(clientPort, "127.0.0.1", serverPort);
             Debug.WriteLine($"[Sender] Ready on port {clientPort}");
-            // ========== 通信 ==========
+
+            // ========== 通信（TCP/Pipe/WebSocketと同じ） ==========
 
             // プッシュ送信
             await sender.SendAsync("Hello UDP!");
             await Task.Delay(100);
 
-            // リクエスト/レスポンス（タイムアウト付き）
+            // リクエスト/レスポンス
             try
             {
-                var response = await sender.SendAndReceiveAsync("Ping", timeoutMs: 3000);
+                var response = await sender.SendAndReceiveAsync("Ping");
                 Debug.WriteLine($"[Sender] Response: {response.PayloadString}");
             }
             catch (OperationCanceledException)
@@ -64,49 +66,91 @@ namespace HagLib.NET.Duplex.Examples
                 Debug.WriteLine("[Sender] Request timed out");
             }
 
-            sender.Close();
-            receiver.Close();
+            await sender.CloseAsync();
+            await receiver.CloseAsync();
         }
 
         /// <summary>
-        /// ブロードキャストの例
+        /// IDuplexChannel共通インターフェースで使う例
+        /// </summary>
+        public static async Task CommonInterfaceExample()
+        {
+            const int serverPort = 22925;
+            const int clientPort = 22926;
+
+            // サーバー
+            var serverUdp = new UdpDuplexChannel();
+            serverUdp.Bind(serverPort);
+
+            IDuplexChannel server = serverUdp;
+            server.OnReceived += async (ch, msg) =>
+            {
+                Debug.WriteLine($"[Server] Received: {msg.PayloadString}");
+
+                if (msg.Type == MessageType.Request)
+                {
+                    await ch.ReplyAsync(msg, "OK from server");
+                }
+            };
+
+            // クライアント
+            var clientUdp = new UdpDuplexChannel();
+            clientUdp.BindAndConnect(clientPort, "127.0.0.1", serverPort);
+
+            IDuplexChannel client = clientUdp;
+
+            // 共通インターフェースで通信（TCP/Pipe/WebSocketと完全に同じ）
+            await client.SendAsync("Hello via IDuplexChannel");
+            await Task.Delay(100);
+
+            try
+            {
+                var response = await client.SendAndReceiveAsync("Ping via interface");
+                Debug.WriteLine($"[Client] Response: {response.PayloadString}");
+            }
+            catch (OperationCanceledException)
+            {
+                Debug.WriteLine("[Client] Timeout");
+            }
+
+            await client.CloseAsync();
+            await server.CloseAsync();
+        }
+
+        /// <summary>
+        /// ブロードキャストの例（UDP固有機能）
         /// </summary>
         public static async Task BroadcastExample()
         {
             const int port = 22924;
 
-            // 受信側を2つ起動
             using var receiver1 = new UdpDuplexChannel();
             using var receiver2 = new UdpDuplexChannel();
 
-            receiver1.OnReceived += (ch, msg, from) =>
+            receiver1.OnReceived += (ch, msg) =>
             {
                 Debug.WriteLine($"[Receiver1] {msg.PayloadString}");
             };
 
-            receiver2.OnReceived += (ch, msg, from) =>
+            receiver2.OnReceived += (ch, msg) =>
             {
                 Debug.WriteLine($"[Receiver2] {msg.PayloadString}");
             };
 
-            // 同じポートで受信するには SO_REUSEADDR が必要
-            // ここでは別ポートで示す
             receiver1.Bind(port);
             receiver2.Bind(port + 1);
 
-            // 送信側
             using var sender = new UdpDuplexChannel();
             sender.Bind(port + 2);
 
-            // ブロードキャスト（LAN内全員に届く）
             Debug.WriteLine("[Sender] Broadcasting...");
             await sender.BroadcastAsync("Hello everyone!", port);
 
             await Task.Delay(100);
 
-            sender.Close();
-            receiver1.Close();
-            receiver2.Close();
+            await sender.CloseAsync();
+            await receiver1.CloseAsync();
+            await receiver2.CloseAsync();
         }
 
         /// <summary>
@@ -117,11 +161,10 @@ namespace HagLib.NET.Duplex.Examples
             const int portA = 22930;
             const int portB = 22931;
 
-            // ノードA
             using var nodeA = new UdpDuplexChannel();
             var receivedByA = 0;
 
-            nodeA.OnReceived += (ch, msg, from) =>
+            nodeA.OnReceived += (ch, msg) =>
             {
                 Interlocked.Increment(ref receivedByA);
                 Debug.WriteLine($"[A] Received: {msg.PayloadString}");
@@ -129,11 +172,10 @@ namespace HagLib.NET.Duplex.Examples
 
             nodeA.BindAndConnect(portA, "127.0.0.1", portB);
 
-            // ノードB
             using var nodeB = new UdpDuplexChannel();
             var receivedByB = 0;
 
-            nodeB.OnReceived += (ch, msg, from) =>
+            nodeB.OnReceived += (ch, msg) =>
             {
                 Interlocked.Increment(ref receivedByB);
                 Debug.WriteLine($"[B] Received: {msg.PayloadString}");
@@ -143,7 +185,6 @@ namespace HagLib.NET.Duplex.Examples
 
             await Task.Delay(100);
 
-            // 双方向で同時に送信
             Debug.WriteLine("\n[Test] Bidirectional parallel send:");
 
             var tasksA = new Task[5];
@@ -163,12 +204,12 @@ namespace HagLib.NET.Duplex.Examples
 
             Debug.WriteLine($"\n[Result] A received: {receivedByA}, B received: {receivedByB}");
 
-            nodeA.Close();
-            nodeB.Close();
+            await nodeA.CloseAsync();
+            await nodeB.CloseAsync();
         }
 
         /// <summary>
-        /// 複数の送信先への送信例
+        /// 複数の送信先への送信例（UDP固有：送信先指定版）
         /// </summary>
         public static async Task MultiTargetExample()
         {
@@ -177,20 +218,18 @@ namespace HagLib.NET.Duplex.Examples
             const int portC = 22942;
             const int senderPort = 22943;
 
-            // 3つの受信ノード
             using var nodeA = new UdpDuplexChannel();
             using var nodeB = new UdpDuplexChannel();
             using var nodeC = new UdpDuplexChannel();
 
-            nodeA.OnReceived += (ch, msg, from) => Debug.WriteLine($"[A] {msg.PayloadString}");
-            nodeB.OnReceived += (ch, msg, from) => Debug.WriteLine($"[B] {msg.PayloadString}");
-            nodeC.OnReceived += (ch, msg, from) => Debug.WriteLine($"[C] {msg.PayloadString}");
+            nodeA.OnReceived += (ch, msg) => Debug.WriteLine($"[A] {msg.PayloadString}");
+            nodeB.OnReceived += (ch, msg) => Debug.WriteLine($"[B] {msg.PayloadString}");
+            nodeC.OnReceived += (ch, msg) => Debug.WriteLine($"[C] {msg.PayloadString}");
 
             nodeA.Bind(portA);
             nodeB.Bind(portB);
             nodeC.Bind(portC);
 
-            // 送信ノード（複数の宛先に送信）
             using var sender = new UdpDuplexChannel();
             sender.Bind(senderPort);
 
@@ -198,17 +237,17 @@ namespace HagLib.NET.Duplex.Examples
             var endPointB = new IPEndPoint(IPAddress.Loopback, portB);
             var endPointC = new IPEndPoint(IPAddress.Loopback, portC);
 
-            // 個別に送信
+            // 送信先指定版（UDP固有）
             await sender.SendAsync(new DuplexMessage("Hello A!"), endPointA);
             await sender.SendAsync(new DuplexMessage("Hello B!"), endPointB);
             await sender.SendAsync(new DuplexMessage("Hello C!"), endPointC);
 
             await Task.Delay(100);
 
-            nodeA.Close();
-            nodeB.Close();
-            nodeC.Close();
-            sender.Close();
+            await nodeA.CloseAsync();
+            await nodeB.CloseAsync();
+            await nodeC.CloseAsync();
+            await sender.CloseAsync();
         }
 
         /// <summary>
@@ -218,30 +257,28 @@ namespace HagLib.NET.Duplex.Examples
         {
             const int discoveryPort = 22950;
 
-            // サーバー（発見要求に応答）
             using var server = new UdpDuplexChannel();
 
-            server.OnReceived += async (ch, msg, from) =>
+            server.OnReceived += async (ch, msg) =>
             {
                 if (msg.PayloadString == "DISCOVER")
                 {
-                    Debug.WriteLine($"[Server] Discovery request from {from}");
-                    await ch.ReplyAsync(msg, "SERVER_HERE:MyServer:12345", from);
+                    Debug.WriteLine($"[Server] Discovery request received");
+                    await ch.ReplyAsync(msg, "SERVER_HERE:MyServer:12345");
                 }
             };
 
             server.Bind(discoveryPort);
             Debug.WriteLine($"[Server] Waiting for discovery on port {discoveryPort}");
 
-            // クライアント（サーバーを探す）
             using var client = new UdpDuplexChannel();
 
-            client.OnReceived += (ch, msg, from) =>
+            client.OnReceived += (ch, msg) =>
             {
-                Debug.WriteLine($"[Client] Found server at {from}: {msg.PayloadString}");
+                Debug.WriteLine($"[Client] Found server: {msg.PayloadString}");
             };
 
-            client.Bind(discoveryPort + 1);
+            client.BindAndConnect(discoveryPort + 1, "127.0.0.1", discoveryPort);
 
             // ブロードキャストで探す
             Debug.WriteLine("[Client] Sending discovery broadcast...");
@@ -249,14 +286,10 @@ namespace HagLib.NET.Duplex.Examples
 
             await Task.Delay(500);
 
-            // または直接リクエスト（ローカルテスト用）
-            var serverEndPoint = new IPEndPoint(IPAddress.Loopback, discoveryPort);
+            // 直接リクエスト
             try
             {
-                var response = await client.SendAndReceiveAsync(
-                    new DuplexMessage("DISCOVER"), 
-                    serverEndPoint, 
-                    timeoutMs: 1000);
+                var response = await client.SendAndReceiveAsync("DISCOVER");
                 Debug.WriteLine($"[Client] Direct response: {response.PayloadString}");
             }
             catch (OperationCanceledException)
@@ -264,8 +297,8 @@ namespace HagLib.NET.Duplex.Examples
                 Debug.WriteLine("[Client] Discovery timed out");
             }
 
-            server.Close();
-            client.Close();
+            await server.CloseAsync();
+            await client.CloseAsync();
         }
     }
 }
