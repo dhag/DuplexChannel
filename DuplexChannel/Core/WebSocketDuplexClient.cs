@@ -18,6 +18,9 @@ namespace HagLib.NET.Duplex
 
         public bool IsConnected => _channel?.IsConnected ?? false;
         public string Id => _channel?.Id ?? "";
+
+        /// <summary>kind省略時に使用する既定の送信フレーム種別（接続時にChannelへ伝播）</summary>
+        public WebSocketFrameKind DefaultFrame { get; set; } = WebSocketFrameKind.Text;
         
         /// <summary>
         /// 内部のチャネルを取得
@@ -52,6 +55,7 @@ namespace HagLib.NET.Duplex
             await _webSocket.ConnectAsync(uri, ct).ConfigureAwait(false);
 
             _channel = new WebSocketDuplexChannel(_webSocket);
+            _channel.DefaultFrame = DefaultFrame;
             _channel.OnReceived += (ch, msg) => OnReceived?.Invoke(this, msg);
             _channel.OnDisconnected += (ch) => OnDisconnected?.Invoke(this);
             _channel.StartReceiving(_cts.Token);
@@ -161,6 +165,34 @@ namespace HagLib.NET.Duplex
         {
             EnsureConnected();
             return _channel.ReplyAsync(request, payload, ct);
+        }
+
+        #endregion
+
+        #region 追加メソッド（フレーム種別指定：Text/Binary）
+
+        public Task SendAsync(DuplexMessage message, WebSocketFrameKind kind, CancellationToken ct = default)
+        {
+            EnsureConnected();
+            return _channel.SendAsync(message, kind, ct);
+        }
+
+        public Task SendAsync(byte[] data, WebSocketFrameKind kind, CancellationToken ct = default)
+        {
+            EnsureConnected();
+            return _channel.SendAsync(data, kind, ct);
+        }
+
+        public Task<DuplexMessage> SendAndReceiveAsync(DuplexMessage message, WebSocketFrameKind kind, CancellationToken ct = default)
+        {
+            EnsureConnected();
+            return _channel.SendAndReceiveAsync(message, kind, ct);
+        }
+
+        public Task ReplyAsync(DuplexMessage request, DuplexMessage response, WebSocketFrameKind kind, CancellationToken ct = default)
+        {
+            EnsureConnected();
+            return _channel.ReplyAsync(request, response, kind, ct);
         }
 
         #endregion

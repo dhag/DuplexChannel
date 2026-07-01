@@ -4,8 +4,8 @@ using System.Text;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
-//using Newtonsoft.Json;
-//using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Linq;
+// Unity上でビルドする場合は上の行をコメントアウトし、下の行を有効化する:
 //using Unity.Plastic.Newtonsoft.Json.Linq;
 
 namespace HagLib.NET.Duplex
@@ -37,6 +37,9 @@ namespace HagLib.NET.Duplex
 
         public bool IsConnected => _webSocket?.State == WebSocketState.Open;
         public string Id { get; }
+
+        /// <summary>kind省略時に使用する既定の送信フレーム種別（既定: Text）</summary>
+        public WebSocketFrameKind DefaultFrame { get; set; } = WebSocketFrameKind.Text;
 
         public event Action<IDuplexChannel, DuplexMessage> OnReceived;
         public event Action<IDuplexChannel> OnDisconnected;
@@ -408,7 +411,7 @@ namespace HagLib.NET.Duplex
         }
 
         private Task SendInternalAsync(DuplexMessage message, CancellationToken ct)
-            => SendInternalAsync(message, WebSocketFrameKind.Text, ct);
+            => SendInternalAsync(message, DefaultFrame, ct);
 
         private async Task SendInternalAsync(DuplexMessage message, WebSocketFrameKind kind, CancellationToken ct)
         {

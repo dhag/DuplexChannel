@@ -24,6 +24,9 @@ namespace HagLib.NET.Duplex
 
         public bool IsListening => _listener?.IsListening ?? false;
 
+        /// <summary>kind省略時に使用する既定の送信フレーム種別（クライアント受理時にChannelへ伝播）</summary>
+        public WebSocketFrameKind DefaultFrame { get; set; } = WebSocketFrameKind.Text;
+
         public IDuplexChannel[] Clients => _clients.Values.ToArray<IDuplexChannel>();
 
         public event Action<IDuplexChannel> OnClientConnected;
@@ -99,6 +102,24 @@ namespace HagLib.NET.Duplex
             => BroadcastAsync(payload.ToMessage(), ct);
 
         /// <summary>
+        /// 全クライアントにブロードキャスト（フレーム種別指定）
+        /// </summary>
+        public async Task BroadcastAsync(DuplexMessage message, WebSocketFrameKind kind, CancellationToken ct = default)
+        {
+            var tasks = new List<Task>(_clients.Count);
+            foreach (var client in _clients.Values)
+            {
+                tasks.Add(client.SendAsync(message, kind, ct));
+            }
+
+            try
+            {
+                await Task.WhenAll(tasks).ConfigureAwait(false);
+            }
+            catch { }
+        }
+
+        /// <summary>
         /// 特定のクライアント以外に送信
         /// </summary>
         public async Task BroadcastExceptAsync(string excludeClientId, DuplexMessage message, CancellationToken ct = default)
@@ -110,6 +131,24 @@ namespace HagLib.NET.Duplex
                     try
                     {
                         await client.SendAsync(message, ct).ConfigureAwait(false);
+                    }
+                    catch { }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 特定のクライアント以外に送信（フレーム種別指定）
+        /// </summary>
+        public async Task BroadcastExceptAsync(string excludeClientId, DuplexMessage message, WebSocketFrameKind kind, CancellationToken ct = default)
+        {
+            foreach (var client in _clients.Values)
+            {
+                if (client.Id != excludeClientId)
+                {
+                    try
+                    {
+                        await client.SendAsync(message, kind, ct).ConfigureAwait(false);
                     }
                     catch { }
                 }
@@ -195,6 +234,7 @@ namespace HagLib.NET.Duplex
                         var clientId = $"W{Interlocked.Increment(ref _clientIdCounter):D4}";
 
                         var channel = new WebSocketDuplexChannel(wsContext.WebSocket, clientId);
+                        channel.DefaultFrame = DefaultFrame;
                         channel.OnReceived += (ch, msg) => OnReceived?.Invoke(ch, msg);
                         channel.OnDisconnected += HandleClientDisconnected;
 
