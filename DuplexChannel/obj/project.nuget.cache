@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "hpdpfg5ZzIqz9nEiDRc78AzmtOey+n4Nc/P4/CdN1CWabnYcBiJ8o6b43W4NEts/tC2Bd45W4wJwb2ZD/VngJQ==",
+  "dgSpecHash": "vIFPdpHUcuyJZ2h9SE40bhH9l/GWIfkeIqeS33IyMgUoGXN91IQOuzXLCvUXfU0vxu+Qq0e3YhXTsVhzjkRWSA==",
   "success": true,
   "projectFilePath": "D:\\UNITY保存の品\\TEO3.0開発中\\ネットワーク通信統合\\DuplexChannel\\DuplexChannel\\DuplexChannel.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\dhag\\.nuget\\packages\\newtonsoft.json\\13.0.4\\newtonsoft.json.13.0.4.nupkg.sha512"
+  ],
   "logs": []
 }

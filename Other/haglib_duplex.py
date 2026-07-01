@@ -1824,13 +1824,23 @@ if __name__ == "__main__":
 # WebSocket双方向通信 (ブラウザ対応)
 # =============================================================================
 
+class FrameKind(IntEnum):
+    """
+    WebSocket送信フレーム種別（C# の WebSocketFrameKind に対応）
+    """
+    TEXT = 0    # JSONテキストフレーム（既定・後方互換）
+    BINARY = 1  # DuplexPacket形式のバイナリフレーム
+
+
 class WebSocketDuplexChannel(IDuplexChannel):
     """
     WebSocket双方向通信チャネル
-    JSON形式でメッセージを送受信（ブラウザ互換）
+    JSON形式（テキストフレーム）またはDuplexPacket形式（バイナリフレーム）で送受信
+    受信はテキスト/バイナリ両方を自動判別。送信は既定TEXT、kind指定でBINARYに切替。
     """
 
-    def __init__(self, websocket=None, channel_id: str = None):
+    def __init__(self, websocket=None, channel_id: str = None,
+                 default_frame: FrameKind = FrameKind.TEXT):
         import uuid
         self._websocket = websocket
         self._id = channel_id or uuid.uuid4().hex[:8]
@@ -1839,6 +1849,7 @@ class WebSocketDuplexChannel(IDuplexChannel):
         self._next_message_id = 0
         self._receive_task: Optional[asyncio.Task] = None
         self._closed = False
+        self.default_frame = default_frame
 
         self.on_received: Optional[Callable[[IDuplexChannel, DuplexMessage], Awaitable[None]]] = None
         self.on_disconnected: Optional[Callable[[IDuplexChannel], Awaitable[None]]] = None
@@ -1981,13 +1992,21 @@ class WebSocketDuplexChannel(IDuplexChannel):
             except Exception as e:
                 logger.error(f"on_disconnected handler error: {e}")
 
-    async def send(self, message: DuplexMessage) -> None:
+    async def send(self, message: DuplexMessage, kind: Optional[FrameKind] = None) -> None:
         message.type = MessageType.PUSH
         self._next_message_id += 1
         message.id = self._next_message_id
-        await self._send_internal(message)
+        await self._send_internal(message, kind)
 
-    async def send_and_receive(self, message: DuplexMessage) -> DuplexMessage:
+    async def send_bytes_frame(self, data: bytes, kind: Optional[FrameKind] = None) -> None:
+        """
+        生バイナリをプッシュ送信（C# SendAsync(byte[], kind) 相当）。
+        受信側の to_typed_payload() が成立するよう TypedPayload(Binary) で包む。
+        """
+        await self.send(TypedPayload.from_binary(data).to_message(), kind)
+
+    async def send_and_receive(self, message: DuplexMessage,
+                               kind: Optional[FrameKind] = None) -> DuplexMessage:
         message.type = MessageType.REQUEST
         self._next_message_id += 1
         message.id = self._next_message_id
@@ -1997,23 +2016,33 @@ class WebSocketDuplexChannel(IDuplexChannel):
         self._pending_requests[message.id] = future
 
         try:
-            await self._send_internal(message)
+            await self._send_internal(message, kind)
             return await future
         except:
             self._pending_requests.pop(message.id, None)
             raise
 
-    async def reply(self, request: DuplexMessage, response: DuplexMessage) -> None:
+    async def reply(self, request: DuplexMessage, response: DuplexMessage,
+                    kind: Optional[FrameKind] = None) -> None:
         response.type = MessageType.RESPONSE
         response.id = request.id
-        await self._send_internal(response)
+        await self._send_internal(response, kind)
 
-    async def _send_internal(self, message: DuplexMessage) -> None:
-        """JSON形式で送信"""
+    async def _send_internal(self, message: DuplexMessage,
+                             kind: Optional[FrameKind] = None) -> None:
+        """kind=BINARY: DuplexPacketをバイナリフレームで送信 / kind=TEXT(既定): JSONテキスト"""
         import json
         import base64
 
+        if kind is None:
+            kind = self.default_frame
+
         async with self._send_lock:
+            if kind == FrameKind.BINARY:
+                packet = DuplexPacket.serialize(message)
+                await self._websocket.send(packet)
+                return
+
             payload = message.to_typed_payload()
 
             type_str = {
@@ -2079,10 +2108,11 @@ class WebSocketDuplexClient(IDuplexChannel):
         await client.close()
     """
 
-    def __init__(self, uri: str):
+    def __init__(self, uri: str, default_frame: FrameKind = FrameKind.TEXT):
         self._uri = uri
         self._channel: Optional[WebSocketDuplexChannel] = None
         self._websocket = None
+        self._default_frame = default_frame
 
         self.on_received: Optional[Callable[[IDuplexChannel, DuplexMessage], Awaitable[None]]] = None
         self.on_disconnected: Optional[Callable[[IDuplexChannel], Awaitable[None]]] = None
@@ -2106,7 +2136,7 @@ class WebSocketDuplexClient(IDuplexChannel):
             raise RuntimeError("Already connected.")
 
         self._websocket = await websockets.connect(self._uri)
-        self._channel = WebSocketDuplexChannel(self._websocket)
+        self._channel = WebSocketDuplexChannel(self._websocket, default_frame=self._default_frame)
         self._channel.on_received = self._on_received
         self._channel.on_disconnected = self._on_disconnected
         self._channel._start_receiving()
@@ -2126,23 +2156,29 @@ class WebSocketDuplexClient(IDuplexChannel):
         if self.on_disconnected:
             await self.on_disconnected(self)
 
-    async def send(self, message: DuplexMessage) -> None:
+    async def send(self, message: DuplexMessage, kind: Optional[FrameKind] = None) -> None:
         self._ensure_connected()
-        await self._channel.send(message)
+        await self._channel.send(message, kind)
 
     async def send_text(self, text: str) -> None:
         await self.send(DuplexMessage.from_text(text))
 
-    async def send_and_receive(self, message: DuplexMessage) -> DuplexMessage:
+    async def send_bytes_frame(self, data: bytes, kind: Optional[FrameKind] = None) -> None:
         self._ensure_connected()
-        return await self._channel.send_and_receive(message)
+        await self._channel.send_bytes_frame(data, kind)
+
+    async def send_and_receive(self, message: DuplexMessage,
+                               kind: Optional[FrameKind] = None) -> DuplexMessage:
+        self._ensure_connected()
+        return await self._channel.send_and_receive(message, kind)
 
     async def send_and_receive_text(self, text: str) -> DuplexMessage:
         return await self.send_and_receive(DuplexMessage.from_text(text))
 
-    async def reply(self, request: DuplexMessage, response: DuplexMessage) -> None:
+    async def reply(self, request: DuplexMessage, response: DuplexMessage,
+                    kind: Optional[FrameKind] = None) -> None:
         self._ensure_connected()
-        await self._channel.reply(request, response)
+        await self._channel.reply(request, response, kind)
 
     async def close(self) -> None:
         if self._channel:
@@ -2164,10 +2200,11 @@ class WebSocketDuplexServer(IDuplexServer):
         await server.start(8080)
     """
 
-    def __init__(self):
+    def __init__(self, default_frame: FrameKind = FrameKind.TEXT):
         self._server = None
         self._clients: Dict[str, WebSocketDuplexChannel] = {}
         self._client_id_counter = 0
+        self._default_frame = default_frame
 
         self.on_client_connected: Optional[Callable[[IDuplexChannel], Awaitable[None]]] = None
         self.on_client_disconnected: Optional[Callable[[IDuplexChannel], Awaitable[None]]] = None
@@ -2202,7 +2239,7 @@ class WebSocketDuplexServer(IDuplexServer):
         self._client_id_counter += 1
         client_id = f"W{self._client_id_counter:04d}"
 
-        channel = WebSocketDuplexChannel(websocket, client_id)
+        channel = WebSocketDuplexChannel(websocket, client_id, default_frame=self._default_frame)
         channel.on_received = self._on_channel_received
         channel.on_disconnected = self._on_channel_disconnected
 
@@ -2249,19 +2286,26 @@ class WebSocketDuplexServer(IDuplexServer):
             except Exception as e:
                 logger.error(f"on_client_disconnected handler error: {e}")
 
-    async def broadcast(self, message: DuplexMessage) -> None:
+    async def broadcast(self, message: DuplexMessage, kind: Optional[FrameKind] = None) -> None:
         """全クライアントにブロードキャスト"""
-        tasks = [client.send(message) for client in self._clients.values()]
+        tasks = [client.send(message, kind) for client in self._clients.values()]
         if tasks:
             await asyncio.gather(*tasks, return_exceptions=True)
 
     async def broadcast_text(self, text: str) -> None:
         await self.broadcast(DuplexMessage.from_text(text))
 
-    async def broadcast_except(self, exclude_client_id: str, message: DuplexMessage) -> None:
+    async def broadcast_bytes_frame(self, data: bytes, kind: Optional[FrameKind] = None) -> None:
+        """全クライアントに生バイナリをブロードキャスト（TypedPayload(Binary)で包む）"""
+        tasks = [client.send_bytes_frame(data, kind) for client in self._clients.values()]
+        if tasks:
+            await asyncio.gather(*tasks, return_exceptions=True)
+
+    async def broadcast_except(self, exclude_client_id: str, message: DuplexMessage,
+                               kind: Optional[FrameKind] = None) -> None:
         """特定クライアント以外に送信"""
         tasks = [
-            client.send(message)
+            client.send(message, kind)
             for client in self._clients.values()
             if client.id != exclude_client_id
         ]

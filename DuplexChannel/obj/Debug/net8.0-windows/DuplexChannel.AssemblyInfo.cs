@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DuplexChannel")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+63bead22c97c06569425d0d4cf6c846d139dc069")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f347c452d2b15bb1aadc1bb3c8f5684a8ffa131f")]
 [assembly: System.Reflection.AssemblyProductAttribute("DuplexChannel")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DuplexChannel")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

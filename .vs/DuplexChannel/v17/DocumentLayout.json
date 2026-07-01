@@ -3,39 +3,39 @@
   "WorkspaceRootPath": "D:\\UNITY\u4FDD\u5B58\u306E\u54C1\\TEO3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\DuplexChannel\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|D:\\UNITY\u4FDD\u5B58\u306E\u54C1\\TEO3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\DuplexChannel\\duplexchannel\\core\\websocketduplexserver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|solutionrelative:duplexchannel\\core\\websocketduplexserver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|D:\\UNITY\u4FDD\u5B58\u306E\u54C1\\TEO3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\DuplexChannel\\duplexchannel\\core\\websocketduplexchannel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|solutionrelative:duplexchannel\\core\\websocketduplexchannel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|d:\\unity\u4FDD\u5B58\u306E\u54C1\\teo3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\duplexchannel\\duplexchannel\\samples\\udpexample.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|solutionrelative:duplexchannel\\samples\\udpexample.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|d:\\unity\u4FDD\u5B58\u306E\u54C1\\teo3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\duplexchannel\\duplexchannel\\core\\udpduplexchannel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|D:\\UNITY\u4FDD\u5B58\u306E\u54C1\\TEO3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\DuplexChannel\\duplexchannel\\core\\udpduplexchannel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|solutionrelative:duplexchannel\\core\\udpduplexchannel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|d:\\unity\u4FDD\u5B58\u306E\u54C1\\teo3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\duplexchannel\\duplexchannel\\core\\websocketduplexserver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|solutionrelative:duplexchannel\\core\\websocketduplexserver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|d:\\unity\u4FDD\u5B58\u306E\u54C1\\teo3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\duplexchannel\\duplexchannel\\samples\\websocketserverexample.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|D:\\UNITY\u4FDD\u5B58\u306E\u54C1\\TEO3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\DuplexChannel\\duplexchannel\\samples\\websocketserverexample.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|solutionrelative:duplexchannel\\samples\\websocketserverexample.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|d:\\unity\u4FDD\u5B58\u306E\u54C1\\teo3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\duplexchannel\\duplexchannel\\core\\websocketduplexchannel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|solutionrelative:duplexchannel\\core\\websocketduplexchannel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|d:\\unity\u4FDD\u5B58\u306E\u54C1\\teo3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\duplexchannel\\duplexchannel\\core\\tcpduplexchannel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|D:\\UNITY\u4FDD\u5B58\u306E\u54C1\\TEO3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\DuplexChannel\\duplexchannel\\core\\tcpduplexchannel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|solutionrelative:duplexchannel\\core\\tcpduplexchannel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|d:\\unity\u4FDD\u5B58\u306E\u54C1\\teo3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\duplexchannel\\duplexchannel\\core\\tcpduplexclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|D:\\UNITY\u4FDD\u5B58\u306E\u54C1\\TEO3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\DuplexChannel\\duplexchannel\\core\\tcpduplexclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|solutionrelative:duplexchannel\\core\\tcpduplexclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|d:\\unity\u4FDD\u5B58\u306E\u54C1\\teo3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\duplexchannel\\duplexchannel\\core\\tcpduplexserver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|D:\\UNITY\u4FDD\u5B58\u306E\u54C1\\TEO3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\DuplexChannel\\duplexchannel\\core\\tcpduplexserver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|solutionrelative:duplexchannel\\core\\tcpduplexserver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|d:\\unity\u4FDD\u5B58\u306E\u54C1\\teo3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\duplexchannel\\duplexchannel\\core\\duplexpacket.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|D:\\UNITY\u4FDD\u5B58\u306E\u54C1\\TEO3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\DuplexChannel\\duplexchannel\\core\\duplexpacket.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|solutionrelative:duplexchannel\\core\\duplexpacket.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -43,7 +43,7 @@
       "RelativeMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|solutionrelative:duplexchannel\\samples\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|d:\\unity\u4FDD\u5B58\u306E\u54C1\\teo3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\duplexchannel\\duplexchannel\\samples\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "AbsoluteMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|D:\\UNITY\u4FDD\u5B58\u306E\u54C1\\TEO3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\DuplexChannel\\duplexchannel\\samples\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{6B8C6005-194E-4509-BFB2-3943D2E69BD8}|DuplexChannel\\DuplexChannel.csproj|solutionrelative:duplexchannel\\samples\\form1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
@@ -58,30 +58,30 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 1,
               "Title": "WebSocketDuplexChannel.cs",
               "DocumentMoniker": "D:\\UNITY\u4FDD\u5B58\u306E\u54C1\\TEO3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\DuplexChannel\\DuplexChannel\\Core\\WebSocketDuplexChannel.cs",
               "RelativeDocumentMoniker": "DuplexChannel\\Core\\WebSocketDuplexChannel.cs",
               "ToolTip": "D:\\UNITY\u4FDD\u5B58\u306E\u54C1\\TEO3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\DuplexChannel\\DuplexChannel\\Core\\WebSocketDuplexChannel.cs",
               "RelativeToolTip": "DuplexChannel\\Core\\WebSocketDuplexChannel.cs",
-              "ViewState": "AQIAAHEAAAAAAAAAAAAqwH0AAAANAAAA",
+              "ViewState": "AQIAADwBAAAAAAAAAAASwD4BAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-18T13:01:45.936Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
               "Title": "WebSocketDuplexServer.cs",
               "DocumentMoniker": "D:\\UNITY\u4FDD\u5B58\u306E\u54C1\\TEO3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\DuplexChannel\\DuplexChannel\\Core\\WebSocketDuplexServer.cs",
               "RelativeDocumentMoniker": "DuplexChannel\\Core\\WebSocketDuplexServer.cs",
               "ToolTip": "D:\\UNITY\u4FDD\u5B58\u306E\u54C1\\TEO3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\DuplexChannel\\DuplexChannel\\Core\\WebSocketDuplexServer.cs",
               "RelativeToolTip": "DuplexChannel\\Core\\WebSocketDuplexServer.cs",
-              "ViewState": "AQIAACEAAAAAAAAAAAAkwC8AAAAGAAAA",
+              "ViewState": "AQIAADwAAAAAAAAAAAAYwD8AAAAJAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-18T12:58:03.237Z",
               "EditorCaption": ""
@@ -114,7 +114,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "UdpDuplexChannel.cs",
               "DocumentMoniker": "D:\\UNITY\u4FDD\u5B58\u306E\u54C1\\TEO3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\DuplexChannel\\DuplexChannel\\Core\\UdpDuplexChannel.cs",
               "RelativeDocumentMoniker": "DuplexChannel\\Core\\UdpDuplexChannel.cs",
@@ -140,20 +140,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
               "Title": "UdpExample.cs",
               "DocumentMoniker": "D:\\UNITY\u4FDD\u5B58\u306E\u54C1\\TEO3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\DuplexChannel\\DuplexChannel\\Samples\\UdpExample.cs",
               "RelativeDocumentMoniker": "DuplexChannel\\Samples\\UdpExample.cs",
               "ToolTip": "D:\\UNITY\u4FDD\u5B58\u306E\u54C1\\TEO3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\DuplexChannel\\DuplexChannel\\Samples\\UdpExample.cs",
               "RelativeToolTip": "DuplexChannel\\Samples\\UdpExample.cs",
-              "ViewState": "AQIAAEkAAAAAAAAAAAAIwFUAAAAaAAAA",
+              "ViewState": "AQIAAEgAAAAAAAAAAAAIwFUAAAAaAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-18T10:34:27.286Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "WebSocketServerExample.cs",
               "DocumentMoniker": "D:\\UNITY\u4FDD\u5B58\u306E\u54C1\\TEO3.0\u958B\u767A\u4E2D\\\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u901A\u4FE1\u7D71\u5408\\DuplexChannel\\DuplexChannel\\Samples\\WebSocketServerExample.cs",
               "RelativeDocumentMoniker": "DuplexChannel\\Samples\\WebSocketServerExample.cs",
@@ -186,7 +186,8 @@
               "RelativeToolTip": "DuplexChannel\\Samples\\Program.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAADwvwAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-18T09:07:08.235Z"
+              "WhenOpened": "2025-12-18T09:07:08.235Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",

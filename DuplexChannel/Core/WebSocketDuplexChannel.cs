@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 //using Newtonsoft.Json;
 //using Newtonsoft.Json.Linq;
-using Unity.Plastic.Newtonsoft.Json.Linq;
+//using Unity.Plastic.Newtonsoft.Json.Linq;
 
 namespace HagLib.NET.Duplex
 {
