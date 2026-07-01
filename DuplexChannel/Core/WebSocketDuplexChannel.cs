@@ -1,16 +1,30 @@
 using System;
 using System.Collections.Concurrent;
 using System.Text;
-using System.Text.Json;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+//using Newtonsoft.Json;
+//using Newtonsoft.Json.Linq;
+using Unity.Plastic.Newtonsoft.Json.Linq;
 
 namespace HagLib.NET.Duplex
 {
     /// <summary>
+    /// WebSocket送信フレーム種別
+    /// </summary>
+    public enum WebSocketFrameKind
+    {
+        /// <summary>JSONテキストフレーム（既定・後方互換）</summary>
+        Text = 0,
+        /// <summary>DuplexPacket形式のバイナリフレーム</summary>
+        Binary = 1,
+    }
+
+    /// <summary>
     /// WebSocket双方向通信チャネル（コア通信機能）
     /// サーバー・クライアント両方で使用
+    /// Unity対応版（Newtonsoft.Json使用）
     /// </summary>
     public class WebSocketDuplexChannel : IDuplexChannel
     {
@@ -148,6 +162,60 @@ namespace HagLib.NET.Duplex
 
         #endregion
 
+        #region 追加メソッド（フレーム種別指定：Text/Binary）
+
+        /// <summary>
+        /// プッシュ送信（フレーム種別指定）
+        /// </summary>
+        public Task SendAsync(DuplexMessage message, WebSocketFrameKind kind, CancellationToken ct = default)
+        {
+            message.Type = MessageType.Push;
+            message.Id = Interlocked.Increment(ref _nextMessageId);
+            return SendInternalAsync(message, kind, ct);
+        }
+
+        /// <summary>
+        /// 生バイナリをプッシュ送信（フレーム種別指定）。
+        /// 受信側の ToTypedPayload() が成立するよう TypedPayload(Binary) で包む。
+        /// </summary>
+        public Task SendAsync(byte[] data, WebSocketFrameKind kind, CancellationToken ct = default)
+            => SendAsync(TypedPayload.FromBinary(data).ToMessage(), kind, ct);
+
+        /// <summary>
+        /// リクエスト送信して応答を待つ（フレーム種別指定）
+        /// </summary>
+        public async Task<DuplexMessage> SendAndReceiveAsync(DuplexMessage message, WebSocketFrameKind kind, CancellationToken ct = default)
+        {
+            message.Type = MessageType.Request;
+            message.Id = Interlocked.Increment(ref _nextMessageId);
+
+            var tcs = new TaskCompletionSource<DuplexMessage>(TaskCreationOptions.RunContinuationsAsynchronously);
+            _pendingRequests[message.Id] = tcs;
+
+            try
+            {
+                using var registration = ct.Register(() => tcs.TrySetCanceled());
+                await SendInternalAsync(message, kind, ct).ConfigureAwait(false);
+                return await tcs.Task.ConfigureAwait(false);
+            }
+            finally
+            {
+                _pendingRequests.TryRemove(message.Id, out _);
+            }
+        }
+
+        /// <summary>
+        /// リクエストに応答する（フレーム種別指定）
+        /// </summary>
+        public Task ReplyAsync(DuplexMessage request, DuplexMessage response, WebSocketFrameKind kind, CancellationToken ct = default)
+        {
+            response.Type = MessageType.Response;
+            response.Id = request.Id;
+            return SendInternalAsync(response, kind, ct);
+        }
+
+        #endregion
+
         #region 内部実装
 
         private async Task ReceiveLoopAsync(CancellationToken ct)
@@ -217,25 +285,25 @@ namespace HagLib.NET.Duplex
         {
             try
             {
-                using var doc = JsonDocument.Parse(json);
-                var root = doc.RootElement;
+                var root = JObject.Parse(json);
 
-                var msgType = root.TryGetProperty("type", out var typeEl) ? typeEl.GetString() : "send";
-                var id = root.TryGetProperty("id", out var idEl) ? idEl.GetInt32() : 0;
+                var msgType = root["type"]?.ToString() ?? "send";
+                var id = root["id"]?.ToObject<int>() ?? 0;
 
                 TypedPayload payload;
 
-                if (root.TryGetProperty("items", out var itemsEl) && itemsEl.ValueKind == JsonValueKind.Array)
+                var itemsEl = root["items"];
+                if (itemsEl != null && itemsEl.Type == JTokenType.Array)
                 {
-                    payload = ParseItemsFromJson(itemsEl);
+                    payload = ParseItemsFromJson((JArray)itemsEl);
                 }
-                else if (root.TryGetProperty("text", out var textEl))
+                else if (root["text"] != null)
                 {
-                    payload = TypedPayload.FromText(textEl.GetString());
+                    payload = TypedPayload.FromText(root["text"].ToString());
                 }
-                else if (root.TryGetProperty("json", out var jsonEl))
+                else if (root["json"] != null)
                 {
-                    payload = TypedPayload.FromJson(jsonEl.GetRawText());
+                    payload = TypedPayload.FromJson(root["json"].ToString());
                 }
                 else
                 {
@@ -258,16 +326,16 @@ namespace HagLib.NET.Duplex
             }
         }
 
-        private TypedPayload ParseItemsFromJson(JsonElement itemsEl)
+        private TypedPayload ParseItemsFromJson(JArray itemsEl)
         {
             var payload = new TypedPayload();
 
-            foreach (var item in itemsEl.EnumerateArray())
+            foreach (var item in itemsEl)
             {
-                var type = item.TryGetProperty("type", out var typeEl) ? typeEl.GetInt32() : 0;
-                var mimeType = item.TryGetProperty("mimeType", out var mimeEl) ? mimeEl.GetString() : "";
-                var data = item.TryGetProperty("data", out var dataEl) ? dataEl.GetString() : "";
-                var encoding = item.TryGetProperty("encoding", out var encEl) ? encEl.GetString() : "";
+                var type = item["type"]?.ToObject<int>() ?? 0;
+                var mimeType = item["mimeType"]?.ToString() ?? "";
+                var data = item["data"]?.ToString() ?? "";
+                var encoding = item["encoding"]?.ToString() ?? "";
 
                 byte[] bytes;
                 if (encoding == "base64")
@@ -339,21 +407,38 @@ namespace HagLib.NET.Duplex
             }
         }
 
-        private async Task SendInternalAsync(DuplexMessage message, CancellationToken ct)
+        private Task SendInternalAsync(DuplexMessage message, CancellationToken ct)
+            => SendInternalAsync(message, WebSocketFrameKind.Text, ct);
+
+        private async Task SendInternalAsync(DuplexMessage message, WebSocketFrameKind kind, CancellationToken ct)
         {
             await _sendLock.WaitAsync(ct).ConfigureAwait(false);
             try
             {
-                var payload = message.ToTypedPayload();
-                var json = SerializeToJson(message, payload);
-                var bytes = Encoding.UTF8.GetBytes(json);
+                if (kind == WebSocketFrameKind.Binary)
+                {
+                    var packet = DuplexPacket.Serialize(message);
 
-                await _webSocket.SendAsync(
-                    new ArraySegment<byte>(bytes),
-                    WebSocketMessageType.Text,
-                    true,
-                    ct
-                ).ConfigureAwait(false);
+                    await _webSocket.SendAsync(
+                        new ArraySegment<byte>(packet),
+                        WebSocketMessageType.Binary,
+                        true,
+                        ct
+                    ).ConfigureAwait(false);
+                }
+                else
+                {
+                    var payload = message.ToTypedPayload();
+                    var json = SerializeToJson(message, payload);
+                    var bytes = Encoding.UTF8.GetBytes(json);
+
+                    await _webSocket.SendAsync(
+                        new ArraySegment<byte>(bytes),
+                        WebSocketMessageType.Text,
+                        true,
+                        ct
+                    ).ConfigureAwait(false);
+                }
             }
             finally
             {
